@@ -18,7 +18,37 @@ protected:
 
 public:	
 	virtual void Tick(float DeltaTime) override;
-
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+public:
+	UFUNCTION(BlueprintCallable, Category = "My|Input")
+	virtual void DoMove(float Right, float Forward);
+	
+	UFUNCTION(BlueprintCallable, Category = "My|Input")
+	virtual void DoLook(float Yaw, float Pitch);
+	
+	UFUNCTION(BlueprintCallable, Category = "My|Input")
+	virtual void DoJumpStart();
+
+	UFUNCTION(BlueprintCallable, Category = "My|Input")
+	virtual void DoJumpStop();
+
+
+protected:
+	void Move(const struct FInputActionValue& Value);
+	void Look(const struct FInputActionValue& Value);
+
+protected:
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "My|Camera")
+	TObjectPtr<class USpringArmComponent> CameraBoom;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "My|Camera")
+	TObjectPtr<class UCameraComponent> FollowCamera;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "My|Input")
+	TObjectPtr<class UInputAction> JumpAction;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "My|Input")
+	TObjectPtr<class UInputAction> MoveAction;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "My|Input")
+	TObjectPtr<class UInputAction> LookAction;
 
 };
