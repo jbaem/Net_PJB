@@ -6,6 +6,12 @@ void AMyHUD::BeginPlay()
 {
 	Super::BeginPlay();
 
+	InitMainWidget();
+
+}
+
+void AMyHUD::InitMainWidget()
+{
 	if (MainWidgetClass)
 	{
 		MainWidget = CreateWidget<UUserWidget>(GetWorld(), MainWidgetClass);

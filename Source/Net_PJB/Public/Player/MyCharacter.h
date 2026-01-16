@@ -33,7 +33,6 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "My|Input")
 	virtual void DoJumpStop();
 
-
 protected:
 	void Move(const struct FInputActionValue& Value);
 	void Look(const struct FInputActionValue& Value);
@@ -50,5 +49,11 @@ protected:
 	TObjectPtr<class UInputAction> MoveAction;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "My|Input")
 	TObjectPtr<class UInputAction> LookAction;
+
+private:
+	void InitCharacterMovement();
+
+	void InitComponents();
+	void InitCameraComponent();
 
 };
