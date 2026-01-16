@@ -14,30 +14,17 @@ public class Net_PJB : ModuleRules
 			"Engine",
 			"InputCore",
 			"EnhancedInput",
-			"AIModule",
-			"StateTreeModule",
-			"GameplayStateTreeModule",
 			"UMG",
-			"Slate"
-		});
+			"Slate",
+			"SlateCore",
+			"Niagara",
+			"NetCore",
+        });
 
 		PrivateDependencyModuleNames.AddRange(new string[] { });
 
 		PublicIncludePaths.AddRange(new string[] {
 			"Net_PJB",
-			"Net_PJB/Variant_Platforming",
-			"Net_PJB/Variant_Platforming/Animation",
-			"Net_PJB/Variant_Combat",
-			"Net_PJB/Variant_Combat/AI",
-			"Net_PJB/Variant_Combat/Animation",
-			"Net_PJB/Variant_Combat/Gameplay",
-			"Net_PJB/Variant_Combat/Interfaces",
-			"Net_PJB/Variant_Combat/UI",
-			"Net_PJB/Variant_SideScrolling",
-			"Net_PJB/Variant_SideScrolling/AI",
-			"Net_PJB/Variant_SideScrolling/Gameplay",
-			"Net_PJB/Variant_SideScrolling/Interfaces",
-			"Net_PJB/Variant_SideScrolling/UI"
 		});
 
 		// Uncomment if you are using Slate UI
