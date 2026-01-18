@@ -13,6 +13,10 @@ class NET_PJB_API AMyHUD : public AHUD
 protected:
 	virtual void BeginPlay() override;
 
+
+public:
+	UUserWidget* GetMainWidget() const { return MainWidget; }
+
 	void InitMainWidget();
 
 protected:
