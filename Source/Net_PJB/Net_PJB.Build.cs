@@ -19,6 +19,8 @@ public class Net_PJB : ModuleRules
 			"SlateCore",
 			"Niagara",
 			"NetCore",
+			"AIModule",
+			"NavigationSystem",
         });
 
 		PrivateDependencyModuleNames.AddRange(new string[] { });
