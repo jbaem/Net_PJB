@@ -15,10 +15,12 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
+	virtual void PossessedBy(AController* NewController) override;
 
 public:	
 	virtual void Tick(float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	virtual void OnRep_PlayerState() override;
 
 public:
 	UFUNCTION(BlueprintCallable, Category = "My|Input")
@@ -43,6 +45,9 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "My|Camera")
 	TObjectPtr<class UCameraComponent> FollowCamera;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "My|Widget")
+	TObjectPtr<class UWidgetComponent> NameWidgetComponent;
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "My|Input")
 	TObjectPtr<class UInputAction> JumpAction;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "My|Input")
@@ -55,5 +60,8 @@ private:
 
 	void InitComponents();
 	void InitCameraComponent();
+	void InitWidgetComponent();
 
+	void UpdateNameWidgetRotation();
+	void InitWidgetInfo();
 };

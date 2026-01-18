@@ -2,14 +2,17 @@
 
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "Components/WidgetComponent.h"
 
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
-
 #include "InputActionValue.h"
 
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+
+#include "UI/MyNameWidget.h"
+#include "Core/MyPlayerState.h"
 
 AMyCharacter::AMyCharacter()
 {
@@ -29,10 +32,18 @@ void AMyCharacter::BeginPlay()
 	
 }
 
+void AMyCharacter::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+
+	InitWidgetInfo();
+}
+
 void AMyCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	UpdateNameWidgetRotation();
 }
 
 void AMyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -55,6 +66,13 @@ void AMyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 			EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
 		}
 	}
+}
+
+void AMyCharacter::OnRep_PlayerState()
+{
+	Super::OnRep_PlayerState();
+
+	InitWidgetInfo();
 }
 
 void AMyCharacter::DoMove(float Right, float Forward)
@@ -116,6 +134,7 @@ void AMyCharacter::InitCharacterMovement()
 void AMyCharacter::InitComponents()
 {
 	InitCameraComponent();
+	InitWidgetComponent();
 }
 
 void AMyCharacter::InitCameraComponent()
@@ -127,4 +146,48 @@ void AMyCharacter::InitCameraComponent()
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
 	FollowCamera->bUsePawnControlRotation = false;
+}
+
+void AMyCharacter::InitWidgetComponent()
+{
+	NameWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("NameWidget"));
+	NameWidgetComponent->SetupAttachment(RootComponent);
+}
+
+void AMyCharacter::UpdateNameWidgetRotation()
+{
+	if (!NameWidgetComponent)
+	{
+		return;
+	}
+
+	APlayerController* PC = GetWorld()->GetFirstPlayerController();
+	if (PC && PC->PlayerCameraManager)
+	{
+		FVector CameraForwrd = PC->PlayerCameraManager->GetCameraRotation().Vector();
+		FRotator LookAtRotation = FRotationMatrix::MakeFromX(-CameraForwrd).Rotator();
+		NameWidgetComponent->SetWorldRotation(LookAtRotation);
+	}
+}
+
+void AMyCharacter::InitWidgetInfo()
+{
+	if (!IsLocallyControlled())
+	{
+		return;
+	}
+
+	AMyPlayerState* MyPS = Cast<AMyPlayerState>(GetPlayerState());
+	if (!MyPS)
+	{
+		return;
+	}
+
+	if(APlayerController* PC = Cast<APlayerController>(GetController()))
+	{
+		if(UMyNameWidget* NameWidget = Cast<UMyNameWidget>(NameWidgetComponent->GetUserWidgetObject()))
+		{
+			NameWidget->SetPlayerStateInfo(MyPS);
+		}
+	}
 }
