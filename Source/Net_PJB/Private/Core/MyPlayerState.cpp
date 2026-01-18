@@ -43,17 +43,17 @@ void AMyPlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLi
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME(AMyPlayerState, ReadyType);
+	DOREPLIFETIME(AMyPlayerState, CurrentState);
 	DOREPLIFETIME(AMyPlayerState, MyScore);
 	DOREPLIFETIME(AMyPlayerState, MyName);
 }
 
-void AMyPlayerState::SetReadyType(EReadyType NewReadyType)
+void AMyPlayerState::SetReadyType(EPlayerStateType NewReadyType)
 {
 	if(HasAuthority())
 	{
-		ReadyType = NewReadyType;
-		OnStateChangedDel.Broadcast(ReadyType);
+		CurrentState = NewReadyType;
+		OnStateChangedDel.Broadcast(CurrentState);
 		OnRep_ReadyType();
 	}
 }
@@ -90,8 +90,12 @@ void AMyPlayerState::SetMyName(const FString& NewName)
 
 void AMyPlayerState::OnRep_ReadyType()
 {
-	
+	if (OnStateChangedDel.IsBound())
+	{
+		OnStateChangedDel.Broadcast(CurrentState);
+	}
 }
+
 
 void AMyPlayerState::OnRep_MyScore()
 {

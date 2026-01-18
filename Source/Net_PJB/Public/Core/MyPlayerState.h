@@ -6,16 +6,16 @@
 #include "MyPlayerState.generated.h"
 
 UENUM(BlueprintType)
-enum class EReadyType : uint8
+enum class EPlayerStateType : uint8
 {
-	READY			UMETA(DisplayName = "Ready"),
-	NOT_READY		UMETA(DisplayName = "Not Ready")
+	WAITING		UMETA(DisplayName = "Waiting"),
+	READY		UMETA(DisplayName = "Ready"),
+	PLAYING		UMETA(DisplayName = "Playing")
 };
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnScoreChangedDelegate, int32, NewScore);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnNameChangedDelegate, const FString&, NewName);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnStateChangedDelegate, EReadyType, NewState);
-
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnStateChangedDelegate, EPlayerStateType, NewState);
 
 UCLASS()
 class NET_PJB_API AMyPlayerState : public APlayerState
@@ -36,7 +36,7 @@ protected:
 	
 public:
 	UFUNCTION(BlueprintCallable, Category = "My")
-	void SetReadyType(EReadyType NewReadyType);
+	void SetReadyType(EPlayerStateType NewReadyType);
 
 	UFUNCTION(BlueprintCallable, Category = "My")
 	void AddMyScore(int32 ScoreToAdd);
@@ -49,7 +49,7 @@ public:
 
 
 	UFUNCTION(BlueprintCallable, Category = "My")
-	EReadyType GetReadyType() const { return ReadyType; }
+	EPlayerStateType GetReadyType() const { return CurrentState; }
 
 	UFUNCTION(BlueprintCallable, Category = "My")
 	int32 GetMyScore() const { return MyScore; }
@@ -69,7 +69,7 @@ protected:
 
 protected:
 	UPROPERTY(ReplicatedUsing = OnRep_ReadyType, BlueprintReadWrite, Category = "My")
-	EReadyType ReadyType = EReadyType::NOT_READY;
+	EPlayerStateType CurrentState = EPlayerStateType::WAITING;
 
 	UPROPERTY(ReplicatedUsing = OnRep_MyScore, BlueprintReadOnly, Category = "My")
 	int32 MyScore = 0;
