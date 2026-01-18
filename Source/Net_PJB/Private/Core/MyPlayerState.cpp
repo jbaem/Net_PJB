@@ -66,7 +66,6 @@ void AMyPlayerState::AddMyScore(int32 ScoreToAdd)
 		OnScoreChangedDel.Broadcast(MyScore);
 		OnRep_MyScore();
 	}
-
 }
 
 void AMyPlayerState::ResetMyScore()
@@ -96,23 +95,16 @@ void AMyPlayerState::OnRep_ReadyType()
 
 void AMyPlayerState::OnRep_MyScore()
 {
-	APlayerController* PC = GetPlayerController();
-	if (PC && PC->IsLocalController())
+	if (OnScoreChangedDel.IsBound())
 	{
-		AHUD* HUD = GetWorld()->GetFirstPlayerController()->GetHUD();
-		AMyHUD* MyHUD = Cast<AMyHUD>(HUD);
-		if(MyHUD)
-		{
-			UMyMainWidget* MainWidget = Cast<UMyMainWidget>(MyHUD->GetMainWidget());
-			if(MainWidget)
-			{
-				//MainWidget->UpdateScoreText(MyScore);
-			}
-		}
+		OnScoreChangedDel.Broadcast(MyScore);
 	}
 }
 
 void AMyPlayerState::OnRep_MyName()
 {
-	
+	if (OnNameChangedDel.IsBound())
+	{
+		OnNameChangedDel.Broadcast(MyName);
+	}
 }
