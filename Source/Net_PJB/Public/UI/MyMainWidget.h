@@ -12,7 +12,8 @@ class NET_PJB_API UMyMainWidget : public UUserWidget
 
 public:
 	virtual void NativeConstruct() override;
-	
+	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
+
 
 	UFUNCTION()
 	void UpdateMyName(const FString& InName);
@@ -28,13 +29,20 @@ public:
 
 protected:
 	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<class UTextBlock> MainTimer;
+	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<class UScoreInfoWidget> MyScoreInfo;
 
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<class UScoreInfoWidget> OtherScoreInfo;
 
+	UPROPERTY()
+	TWeakObjectPtr<class AMyGameStateBase> CachedGameState;
+
 private:
 	FTimerHandle PlayerCheckTimer;
 
+	void SetCachedGameState(class AMyGameStateBase* InGameStateBase);
+	void UpdateTimerText();
 	void FindAndBindPlayers();
 };

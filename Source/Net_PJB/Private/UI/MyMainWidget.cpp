@@ -6,6 +6,8 @@
 #include "Components/TextBlock.h"
 #include "UI/ScoreInfoWidget.h"
 
+#include "Core/MyGameStateBase.h"
+
 void UMyMainWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
@@ -19,6 +21,13 @@ void UMyMainWidget::NativeConstruct()
 	);
 
 	FindAndBindPlayers();
+}
+
+void UMyMainWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
+{
+	Super::NativeTick(MyGeometry, InDeltaTime);
+
+	UpdateTimerText();
 }
 
 void UMyMainWidget::UpdateMyName(const FString& InName)
@@ -39,6 +48,28 @@ void UMyMainWidget::UpdateOtherName(const FString & InName)
 void UMyMainWidget::UpdateOtherScore(int32 InScore)
 {
 	OtherScoreInfo->UpdateScore(InScore);
+}
+
+void UMyMainWidget::SetCachedGameState(AMyGameStateBase* InGameStateBase)
+{
+	if(InGameStateBase)
+	{
+		CachedGameState = InGameStateBase;
+	}
+}
+
+void UMyMainWidget::UpdateTimerText()
+{
+	if(!CachedGameState.IsValid())
+	{
+		AMyGameStateBase* GS = Cast<AMyGameStateBase>(UGameplayStatics::GetGameState(GetWorld()));
+		SetCachedGameState(GS);
+	}
+	else
+	{
+		int32 RemainTimeInt = FMath::CeilToInt(CachedGameState->GetRemainTime());
+		MainTimer->SetText(FText::AsNumber(RemainTimeInt));
+	}
 }
 
 void UMyMainWidget::FindAndBindPlayers()
