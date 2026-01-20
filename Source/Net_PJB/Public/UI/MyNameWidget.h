@@ -13,7 +13,10 @@ class NET_PJB_API UMyNameWidget : public UUserWidget
 public:
 	virtual void NativeConstruct() override;
 
+	UFUNCTION()
 	void SetPlayerStateInfo(class AMyPlayerState* InPS);
+	
+	UFUNCTION()
 	void UpdateNameText(const FString& NewName);
 
 protected:

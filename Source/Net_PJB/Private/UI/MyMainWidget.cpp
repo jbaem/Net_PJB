@@ -29,6 +29,7 @@ void UMyMainWidget::NativeConstruct()
 		GS->OnGameStartDel.AddDynamic(this, &UMyMainWidget::HandleGameStart);
 		GS->OnGameFinishDel.AddDynamic(this, &UMyMainWidget::HandleGameFinish);
 	}
+
 }
 
 void UMyMainWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
