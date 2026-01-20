@@ -3,6 +3,7 @@
 #include "Components/BoxComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "NavigationSystem.h"
+#include "Core/MyGameStateBase.h"
 
 AScoreItemSpawner::AScoreItemSpawner()
 {
@@ -17,12 +18,23 @@ AScoreItemSpawner::AScoreItemSpawner()
 void AScoreItemSpawner::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	if (AMyGameStateBase* GS = GetWorld()->GetGameState<AMyGameStateBase>())
+	{
+		GS->OnGameStartDel.AddDynamic(this, &AScoreItemSpawner::StartSpawning);
+		GS->OnGameFinishDel.AddDynamic(this, &AScoreItemSpawner::StopSpawning);
+	}
 }
 
 void AScoreItemSpawner::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	GetWorld()->GetTimerManager().ClearTimer(SpawnTimerHandle);
+
+	if (AMyGameStateBase* GS = GetWorld()->GetGameState<AMyGameStateBase>())
+	{
+		GS->OnGameStartDel.RemoveDynamic(this, &AScoreItemSpawner::StartSpawning);
+		GS->OnGameFinishDel.RemoveDynamic(this, &AScoreItemSpawner::StopSpawning);
+	}
 
 	Super::EndPlay(EndPlayReason);
 }

@@ -4,6 +4,7 @@
 #include "Core/MyPlayerState.h"
 #include "Kismet/GameplayStatics.h"
 #include "Components/TextBlock.h"
+#include "Components/Border.h"
 #include "UI/ScoreInfoWidget.h"
 
 #include "Core/MyGameStateBase.h"
@@ -28,6 +29,46 @@ void UMyMainWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 	Super::NativeTick(MyGeometry, InDeltaTime);
 
 	UpdateTimerText();
+
+	WinnerWidget->SetVisibility(ESlateVisibility::Hidden);
+	LoserWidget->SetVisibility(ESlateVisibility::Hidden);
+
+	if (AMyGameStateBase* GS = GetWorld()->GetGameState<AMyGameStateBase>())
+	{
+		GS->OnGameStartDel.AddDynamic(this, &UMyMainWidget::HandleGameStart);
+		GS->OnGameFinishDel.AddDynamic(this, &UMyMainWidget::HandleGameFinish);
+	}
+
+}
+
+void UMyMainWidget::HandleGameStart()
+{
+	WinnerWidget->SetVisibility(ESlateVisibility::Hidden);
+	LoserWidget->SetVisibility(ESlateVisibility::Hidden);
+}
+
+void UMyMainWidget::HandleGameFinish()
+{
+	AMyGameStateBase* GS = GetWorld()->GetGameState<AMyGameStateBase>();
+	if (!GS)
+	{
+		return;
+	}
+
+	APlayerState* MyPS = GetOwningPlayerState();
+	APlayerState* WinnerPS = GS->GetWinnerPlayerState();
+
+	if (MyPS && WinnerPS)
+	{
+		if (MyPS == WinnerPS)
+		{
+			WinnerWidget->SetVisibility(ESlateVisibility::Visible);
+		}
+		else
+		{
+			LoserWidget->SetVisibility(ESlateVisibility::Visible);
+		}
+	}
 }
 
 void UMyMainWidget::UpdateMyName(const FString& InName)

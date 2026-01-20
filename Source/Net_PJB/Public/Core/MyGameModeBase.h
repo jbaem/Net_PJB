@@ -13,6 +13,9 @@ class NET_PJB_API AMyGameModeBase : public AGameModeBase
 public:
 	virtual void PostLogin(APlayerController* NewPlayer) override;
 
+	UFUNCTION(BlueprintCallable)
+	void StartMyGame();
+
 protected:
 	UPROPERTY(EditDefaultsOnly, Category = "My")
 	float RoundTime = 60.0f;

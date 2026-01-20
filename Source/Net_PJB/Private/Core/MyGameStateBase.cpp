@@ -1,6 +1,7 @@
 #include "Core/MyGameStateBase.h"
 
 #include "Net/UnrealNetwork.h"
+#include "Core/MyPlayerState.h"
 
 AMyGameStateBase::AMyGameStateBase()
 {
@@ -25,15 +26,6 @@ void AMyGameStateBase::Tick(float DeltaSeconds)
 	}
 }
 
-void AMyGameStateBase::TestPlay()
-{
-	if (HasAuthority())
-	{
-		SetCurrentState(EGameStateType::PLAYING);
-		OnRep_CurrentState();
-	}
-}
-
 void AMyGameStateBase::BeginPlay()
 {
 	Super::BeginPlay();
@@ -47,6 +39,7 @@ void AMyGameStateBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>&OutL
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(AMyGameStateBase, CurrentState);
+	DOREPLIFETIME(AMyGameStateBase, WinnerPlayerState);
 	DOREPLIFETIME(AMyGameStateBase, RemainTime);
 }
 
@@ -68,17 +61,53 @@ void AMyGameStateBase::SetRemainTime(float NewTime)
 	}
 }
 
+void AMyGameStateBase::StartRound(float InRoundTime)
+{
+	if (HasAuthority())
+	{
+		RemainTime = InRoundTime;
+		SetCurrentState(EGameStateType::PLAYING);
+		OnRep_CurrentState();
+	}
+}
+
 void AMyGameStateBase::FinishRound()
 {
 	if (HasAuthority())
 	{
+		AMyPlayerState* CurrentWinner = nullptr;
+		int32 HighestScore = -1;
+
+		for (APlayerState* PS : PlayerArray)
+		{
+			if (AMyPlayerState* MyPS = Cast<AMyPlayerState>(PS))
+			{
+				if (MyPS->GetMyScore() > HighestScore)
+				{
+					HighestScore = MyPS->GetMyScore();
+					CurrentWinner = MyPS;
+				}
+			}
+		}
+		WinnerPlayerState = CurrentWinner;
 		SetCurrentState(EGameStateType::WAITING);
+		OnRep_CurrentState();
 	}
 }
 
 void AMyGameStateBase::OnRep_CurrentState()
 {
-
+	switch (CurrentState)
+	{
+	case EGameStateType::PLAYING:
+		OnGameStartDel.Broadcast();
+		break;
+	case EGameStateType::WAITING:
+		OnGameFinishDel.Broadcast();
+		break;
+	default:
+		break;
+	}
 }
 
 void AMyGameStateBase::OnRep_RemainTime()

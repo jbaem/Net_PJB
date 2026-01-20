@@ -14,6 +14,11 @@ public:
 	virtual void NativeConstruct() override;
 	virtual void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 
+	UFUNCTION()
+	void HandleGameStart();
+
+	UFUNCTION()
+	void HandleGameFinish();
 
 	UFUNCTION()
 	void UpdateMyName(const FString& InName);
@@ -35,6 +40,11 @@ protected:
 
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<class UScoreInfoWidget> OtherScoreInfo;
+
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<class UBorder> WinnerWidget;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<class UBorder> LoserWidget;
 
 	UPROPERTY()
 	TWeakObjectPtr<class AMyGameStateBase> CachedGameState;

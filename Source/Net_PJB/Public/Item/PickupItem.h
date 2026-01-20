@@ -23,6 +23,9 @@ public:
 	UFUNCTION()
 	void OnOverlapBegin(AActor* OverlappedActor, AActor* OtherActor);
 
+	UFUNCTION()
+	void FinishedDestory();
+
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "My")
 	TObjectPtr<class UStaticMeshComponent> Mesh;

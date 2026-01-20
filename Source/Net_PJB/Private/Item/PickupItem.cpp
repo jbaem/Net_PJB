@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 
 #include "Core/MyPlayerState.h"
+#include "Core/MyGameStateBase.h"
 
 APickupItem::APickupItem()
 {
@@ -26,6 +27,10 @@ void APickupItem::BeginPlay()
 	if (HasAuthority())
 	{
 		OnActorBeginOverlap.AddDynamic(this, &APickupItem::OnOverlapBegin);
+		if (AMyGameStateBase* GS = GetWorld()->GetGameState<AMyGameStateBase>())
+		{
+			GS->OnGameFinishDel.AddDynamic(this, &APickupItem::FinishedDestory);
+		}
 	}
 }
 
@@ -34,6 +39,11 @@ void APickupItem::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	if(OnActorBeginOverlap.IsBound())
 	{
 		OnActorBeginOverlap.RemoveDynamic(this, &APickupItem::OnOverlapBegin);
+	}
+	
+	if (AMyGameStateBase* GS = GetWorld()->GetGameState<AMyGameStateBase>())
+	{
+		GS->OnGameFinishDel.RemoveDynamic(this, &APickupItem::FinishedDestory);
 	}
 
 	Super::EndPlay(EndPlayReason);
@@ -59,5 +69,13 @@ void APickupItem::OnOverlapBegin(AActor* OverlappedActor, AActor* OtherActor)
 				Destroy();
 			}
 		}
+	}
+}
+
+void APickupItem::FinishedDestory()
+{
+	if (HasAuthority())
+	{
+		Destroy();
 	}
 }

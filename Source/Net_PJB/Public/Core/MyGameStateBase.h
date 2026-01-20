@@ -13,6 +13,9 @@ enum class EGameStateType : uint8
 	PLAYING		UMETA(DisplayName = "Playing")
 };
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnGameStartDelegate);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnGameFinishDelegate);
+
 UCLASS()
 class NET_PJB_API AMyGameStateBase : public AGameStateBase
 {
@@ -23,14 +26,27 @@ public:
 
 	virtual void Tick(float DeltaSeconds) override;
 
-	UFUNCTION(BlueprintCallable)
-	void TestPlay();
+	FOnGameStartDelegate OnGameStartDel;
+	FOnGameFinishDelegate OnGameFinishDel;
 
 protected:
 	virtual void BeginPlay() override;
-	
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
+public:
+	UFUNCTION(BlueprintCallable)
+	void StartRound(float InRoundTime);
+
+	UFUNCTION(BlueprintCallable)
+	float GetRemainTime() const { return RemainTime; }
+
+	UFUNCTION(BlueprintCallable)
+	EGameStateType GetCurrentState() const { return CurrentState; }
+
+	UFUNCTION()
+	APlayerState* GetWinnerPlayerState() const { return WinnerPlayerState; }
+
+protected:
 	UFUNCTION(BlueprintCallable)
 	void SetCurrentState(EGameStateType NewState);
 
@@ -46,16 +62,12 @@ protected:
 	UFUNCTION()
 	void OnRep_RemainTime();
 
-public:
-	UFUNCTION(BlueprintCallable)
-	float GetRemainTime() const { return RemainTime; }
-
-	UFUNCTION(BlueprintCallable)
-	EGameStateType GetCurrentState() const { return CurrentState; }
-
 protected:
 	UPROPERTY(ReplicatedUsing = OnRep_CurrentState)
 	EGameStateType CurrentState = EGameStateType::WAITING;
+
+	UPROPERTY(Replicated, BlueprintReadOnly, Category = "My|Result")
+	TObjectPtr<APlayerState> WinnerPlayerState = nullptr;
 
 	UPROPERTY(ReplicatedUsing = OnRep_RemainTime)
 	float RemainTime = 60.f;
