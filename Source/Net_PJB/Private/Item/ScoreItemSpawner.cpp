@@ -62,18 +62,47 @@ void AScoreItemSpawner::SpawnEachItem()
 		return;
 	}
 
-	FVector SpawnLocation = GetRandomPointInVolume();
-	FRotator SpawnRotation = FRotator::ZeroRotator;
-	
-	FActorSpawnParameters SpawnParams;
-	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+	UWorld* World = GetWorld();
+	UNavigationSystemV1* NavSys = FNavigationSystem::GetCurrent<UNavigationSystemV1>(World);
+	if(!World || !NavSys)
+	{
+		return;
+	}
 
-	GetWorld()->SpawnActor<AActor>(
-		ScoreItemClass,
-		SpawnLocation,
-		SpawnRotation,
-		SpawnParams
-	);
+	//FVector SpawnLocation = GetRandomPointInVolume();
+	FVector SpawnLocation = FVector::ZeroVector;
+	
+	bool bFoundValidLocation = false;
+	const int32 MaxAttempts = 10;
+	
+	FVector SpawnExtent = SpawnVolume->GetScaledBoxExtent();
+	for (int32 i = 0; i < MaxAttempts; ++i)
+	{
+		FVector RandomPoint = GetRandomPointInVolume();
+		FNavLocation ResultLocation;
+
+		if (NavSys->ProjectPointToNavigation(RandomPoint, ResultLocation, SpawnExtent))
+		{
+			SpawnLocation = ResultLocation.Location;
+
+			SpawnLocation.Z += 200.0f;
+
+			bFoundValidLocation = true;
+			break;
+		}
+	}
+
+	if (bFoundValidLocation)
+	{
+		FActorSpawnParameters SpawnParams;
+		SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
+		World->SpawnActor<AActor>(
+			ScoreItemClass,
+			SpawnLocation,
+			FRotator::ZeroRotator,
+			SpawnParams
+		);
+	}
 }
 
 FVector AScoreItemSpawner::GetRandomPointInVolume() const

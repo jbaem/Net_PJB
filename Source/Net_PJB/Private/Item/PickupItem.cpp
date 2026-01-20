@@ -12,12 +12,11 @@ APickupItem::APickupItem()
 	PrimaryActorTick.bCanEverTick = true;
 	bReplicates = true;
 
+	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
+	RootComponent = Mesh;
 
 	Collision = CreateDefaultSubobject<USphereComponent>(TEXT("Collision"));
-	RootComponent = Collision;
-
-	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
-	Mesh->SetupAttachment(RootComponent);
+	Collision->SetupAttachment(RootComponent);
 }
 
 void APickupItem::BeginPlay()
