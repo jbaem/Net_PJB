@@ -8,11 +8,6 @@
 void UMyNameWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
-
-	if (AMyPlayerState* PS = Cast<AMyPlayerState>(GetOwningPlayerState()))
-	{
-		NameText->SetText(FText::FromString(PS->GetMyName()));
-	}
 }
 
 void UMyNameWidget::SetPlayerStateInfo(AMyPlayerState* InPS)
@@ -22,4 +17,14 @@ void UMyNameWidget::SetPlayerStateInfo(AMyPlayerState* InPS)
 		return;
 	}
 	NameText->SetText(FText::FromString(InPS->GetMyName()));
+
+	if (!InPS->OnNameChangedDel.IsAlreadyBound(this, &UMyNameWidget::UpdateNameText))
+	{
+		InPS->OnNameChangedDel.AddDynamic(this, &UMyNameWidget::UpdateNameText);
+	}
+}
+
+void UMyNameWidget::UpdateNameText(const FString& NewName)
+{
+	NameText->SetText(FText::FromString(NewName));
 }

@@ -30,13 +30,18 @@ void AMyCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	if (HasAuthority())
+	{
+		FTimerHandle WaitTimer;
+		GetWorld()->GetTimerManager().SetTimer(WaitTimer, this, &AMyCharacter::UpdateWidgetInfo, 0.2f, false);
+	}
 }
 
 void AMyCharacter::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
 
-	InitWidgetInfo();
+	UpdateWidgetInfo();
 }
 
 void AMyCharacter::Tick(float DeltaTime)
@@ -72,7 +77,7 @@ void AMyCharacter::OnRep_PlayerState()
 {
 	Super::OnRep_PlayerState();
 
-	InitWidgetInfo();
+	UpdateWidgetInfo();
 }
 
 void AMyCharacter::DoMove(float Right, float Forward)
@@ -170,24 +175,16 @@ void AMyCharacter::UpdateNameWidgetRotation()
 	}
 }
 
-void AMyCharacter::InitWidgetInfo()
+void AMyCharacter::UpdateWidgetInfo()
 {
-	if (!IsLocallyControlled())
-	{
-		return;
-	}
-
-	AMyPlayerState* MyPS = Cast<AMyPlayerState>(GetPlayerState());
+	AMyPlayerState* MyPS = GetPlayerState<AMyPlayerState>();
 	if (!MyPS)
 	{
 		return;
 	}
 
-	if(APlayerController* PC = Cast<APlayerController>(GetController()))
+	if(UMyNameWidget* NameWidget = Cast<UMyNameWidget>(NameWidgetComponent->GetUserWidgetObject()))
 	{
-		if(UMyNameWidget* NameWidget = Cast<UMyNameWidget>(NameWidgetComponent->GetUserWidgetObject()))
-		{
-			NameWidget->SetPlayerStateInfo(MyPS);
-		}
+		NameWidget->SetPlayerStateInfo(MyPS);
 	}
 }

@@ -63,5 +63,6 @@ private:
 	void InitWidgetComponent();
 
 	void UpdateNameWidgetRotation();
-	void InitWidgetInfo();
+	void UpdateName(const FString& InName);
+	void UpdateWidgetInfo();
 };

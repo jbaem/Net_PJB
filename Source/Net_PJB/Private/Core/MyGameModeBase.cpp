@@ -6,7 +6,7 @@ void AMyGameModeBase::PostLogin(APlayerController* NewPlayer)
 {
 	Super::PostLogin(NewPlayer);
 
-	if(AMyPlayerState* PS = Cast<AMyPlayerState>(NewPlayer->GetPlayerState<APawn>()))
+	if (AMyPlayerState* PS = NewPlayer->GetPlayerState<AMyPlayerState>())
 	{
 		PS->ResetMyScore();
 		FString NewName = FString::Printf(TEXT("Player_%d"), GetNumPlayers());

@@ -14,6 +14,7 @@ public:
 	virtual void NativeConstruct() override;
 
 	void SetPlayerStateInfo(class AMyPlayerState* InPS);
+	void UpdateNameText(const FString& NewName);
 
 protected:
 	UPROPERTY(meta = (BindWidget))
