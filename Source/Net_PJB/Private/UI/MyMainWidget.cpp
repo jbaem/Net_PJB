@@ -22,6 +22,13 @@ void UMyMainWidget::NativeConstruct()
 	);
 
 	FindAndBindPlayers();
+
+	HandleGameStart();
+	if (AMyGameStateBase* GS = GetWorld()->GetGameState<AMyGameStateBase>())
+	{
+		GS->OnGameStartDel.AddDynamic(this, &UMyMainWidget::HandleGameStart);
+		GS->OnGameFinishDel.AddDynamic(this, &UMyMainWidget::HandleGameFinish);
+	}
 }
 
 void UMyMainWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
@@ -29,22 +36,13 @@ void UMyMainWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 	Super::NativeTick(MyGeometry, InDeltaTime);
 
 	UpdateTimerText();
-
-	WinnerWidget->SetVisibility(ESlateVisibility::Hidden);
-	LoserWidget->SetVisibility(ESlateVisibility::Hidden);
-
-	if (AMyGameStateBase* GS = GetWorld()->GetGameState<AMyGameStateBase>())
-	{
-		GS->OnGameStartDel.AddDynamic(this, &UMyMainWidget::HandleGameStart);
-		GS->OnGameFinishDel.AddDynamic(this, &UMyMainWidget::HandleGameFinish);
-	}
-
 }
 
 void UMyMainWidget::HandleGameStart()
 {
 	WinnerWidget->SetVisibility(ESlateVisibility::Hidden);
 	LoserWidget->SetVisibility(ESlateVisibility::Hidden);
+	DrawWidget->SetVisibility(ESlateVisibility::Hidden);
 }
 
 void UMyMainWidget::HandleGameFinish()
@@ -58,7 +56,11 @@ void UMyMainWidget::HandleGameFinish()
 	APlayerState* MyPS = GetOwningPlayerState();
 	APlayerState* WinnerPS = GS->GetWinnerPlayerState();
 
-	if (MyPS && WinnerPS)
+	if (!WinnerPS)
+	{
+		DrawWidget->SetVisibility(ESlateVisibility::Visible);
+	}
+	else if (MyPS)
 	{
 		if (MyPS == WinnerPS)
 		{

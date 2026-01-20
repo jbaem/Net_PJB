@@ -31,4 +31,7 @@ protected:
 	TObjectPtr<class UStaticMeshComponent> Mesh;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "My")
 	TObjectPtr<class USphereComponent> Collision;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "My|Score")
+	int32 MyScore = 1;
 };

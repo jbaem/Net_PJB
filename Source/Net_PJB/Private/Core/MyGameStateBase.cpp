@@ -75,24 +75,33 @@ void AMyGameStateBase::FinishRound()
 {
 	if (HasAuthority())
 	{
-		AMyPlayerState* CurrentWinner = nullptr;
-		int32 HighestScore = -1;
-
-		for (APlayerState* PS : PlayerArray)
-		{
-			if (AMyPlayerState* MyPS = Cast<AMyPlayerState>(PS))
-			{
-				if (MyPS->GetMyScore() > HighestScore)
-				{
-					HighestScore = MyPS->GetMyScore();
-					CurrentWinner = MyPS;
-				}
-			}
-		}
-		WinnerPlayerState = CurrentWinner;
+		FindWinner(); 
 		SetCurrentState(EGameStateType::WAITING);
 		OnRep_CurrentState();
 	}
+}
+
+void AMyGameStateBase::FindWinner()
+{
+	AMyPlayerState* CurrentWinner = nullptr;
+	int32 HighestScore = -1;
+
+	for (APlayerState* PS : PlayerArray)
+	{
+		if (AMyPlayerState* MyPS = Cast<AMyPlayerState>(PS))
+		{
+			if (MyPS->GetMyScore() > HighestScore)
+			{
+				HighestScore = MyPS->GetMyScore();
+				CurrentWinner = MyPS;
+			}
+			else if (MyPS->GetMyScore() == HighestScore)
+			{
+				CurrentWinner = nullptr;
+			}
+		}
+	}
+	WinnerPlayerState = CurrentWinner;
 }
 
 void AMyGameStateBase::OnRep_CurrentState()

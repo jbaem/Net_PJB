@@ -62,6 +62,9 @@ protected:
 	UFUNCTION()
 	void OnRep_RemainTime();
 
+private:
+	void FindWinner();
+
 protected:
 	UPROPERTY(ReplicatedUsing = OnRep_CurrentState)
 	EGameStateType CurrentState = EGameStateType::WAITING;

@@ -65,7 +65,7 @@ void APickupItem::OnOverlapBegin(AActor* OverlappedActor, AActor* OtherActor)
 			AMyPlayerState* PS = Character->GetPlayerState<AMyPlayerState>();
 			if (PS)
 			{
-				PS->AddMyScore(10);
+				PS->AddMyScore(MyScore);
 				Destroy();
 			}
 		}

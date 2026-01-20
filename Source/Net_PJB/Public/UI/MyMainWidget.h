@@ -45,6 +45,8 @@ protected:
 	TObjectPtr<class UBorder> WinnerWidget;
 	UPROPERTY(meta = (BindWidget))
 	TObjectPtr<class UBorder> LoserWidget;
+	UPROPERTY(meta = (BindWidget))
+	TObjectPtr<class UBorder> DrawWidget;
 
 	UPROPERTY()
 	TWeakObjectPtr<class AMyGameStateBase> CachedGameState;
